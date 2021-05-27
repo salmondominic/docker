@@ -1,0 +1,3 @@
+docker run -it -d 75f5623949d8 bash
+docker exec -it 54a35bd437f8 bash
+docker run -it -d -p 1234:80 webserver:v1 bash
