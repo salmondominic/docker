@@ -1,0 +1,171 @@
+nexit@ip-172-31-29-225:~$ 
+nexit@ip-172-31-29-225:~$ kubectl get service -n production
+NAME                          TYPE       CLUSTER-IP       EXTERNAL-IP   PORT(S)        AGE
+exit-finder-api-service       NodePort   10.100.102.57    <none>        80:32374/TCP   610d
+exit-finder-updater-service   NodePort   10.100.213.196   <none>        80:32707/TCP   607d
+nexit-api-service             NodePort   10.100.121.202   <none>        80:31475/TCP   610d
+overpass                      NodePort   10.100.164.60    <none>        80:30651/TCP   605d
+
+
+nexit@ip-172-31-29-225:~$ kubectl get po -n kube-system
+NAME                                  READY   STATUS    RESTARTS   AGE
+aws-node-gfdmm                        1/1     Running   0          287d
+aws-node-hgb8n                        1/1     Running   0          287d
+aws-node-sffsm                        1/1     Running   0          287d
+cluster-autoscaler-6dc67d4fd9-ts2c7   1/1     Running   17         600d
+
+
+
+nexit@ip-172-31-29-225:~$ kubectl get ns
+NAME                   STATUS   AGE
+datadog-monitoring     Active   457d
+default                Active   612d
+
+ingress-nginx          Active   610d
+
+
+nexit@ip-172-31-29-225:~$ kubectl get po -n ingress-nginx
+NAME                                        READY   STATUS    RESTARTS   AGE
+nginx-ingress-controller-5b465c5589-vdk4h   1/1     Running   0          600d
+
+
+
+nexit@ip-172-31-29-225:~$ kubectl get service -n ingress-nginx
+NAME            TYPE           CLUSTER-IP       EXTERNAL-IP                                                              PORT(S)                      AGE
+ingress-nginx   LoadBalancer   10.100.204.103   a60ba8db6e10211e9a7fa0a5495d1d17-720416808.us-east-1.elb.amazonaws.com   80:30998/TCP,443:30104/TCP   610d
+
+
+nexit@ip-172-31-29-225:~$ kubectl get ingress -n production
+NAME                          HOSTS                                      ADDRESS                                                                  PORTS   AGE
+exit-finder-api-ingress       exit-finder-prod.k8s.mynexit.com           a60ba8db6e10211e9a7fa0a5495d1d17-720416808.us-east-1.elb.amazonaws.com   80      610d
+exit-finder-updater-ingress   exit-finder-updater-prod.k8s.mynexit.com   a60ba8db6e10211e9a7fa0a5495d1d17-720416808.us-east-1.elb.amazonaws.com   80      607d
+nexit-api-ingress             prod.k8s.mynexit.com                       a60ba8db6e10211e9a7fa0a5495d1d17-720416808.us-east-1.elb.amazonaws.com   80      610d
+
+
+nexit@ip-172-31-29-225:~$ kubectl get ingress nexit-api-ingress -n production -o yaml
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"extensions/v1beta1","kind":"Ingress","metadata":{"annotations":{"kubernetes.io/ingress.class":"nginx","nginx.ingress.kubernetes.io/client-body-buffer-size":"1m","nginx.ingress.kubernetes.io/force-ssl-redirect":"true","nginx.ingress.kubernetes.io/limit-connections":"20","nginx.ingress.kubernetes.io/limit-rpm":"70","nginx.ingress.kubernetes.io/limit-rps":"20","nginx.ingress.kubernetes.io/limit-whitelist":"195.82.181.26/32,18.202.145.21/32","nginx.ingress.kubernetes.io/proxy-body-size":"8m","nginx.ingress.kubernetes.io/proxy-connect-timeout":"90","nginx.ingress.kubernetes.io/proxy-read-timeout":"90","nginx.ingress.kubernetes.io/proxy-send-timeout":"90","nginx.ingress.kubernetes.io/whitelist-source-range":"0.0.0.0/0"},"name":"nexit-api-ingress","namespace":"production"},"spec":{"rules":[{"host":"prod.k8s.mynexit.com","http":{"paths":[{"backend":{"serviceName":"nexit-api-service","servicePort":80}}]}}]}}
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/client-body-buffer-size: 1m
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/limit-connections: "20"
+    nginx.ingress.kubernetes.io/limit-rpm: "70"
+    nginx.ingress.kubernetes.io/limit-rps: "20"
+    nginx.ingress.kubernetes.io/limit-whitelist: 195.82.181.26/32,18.202.145.21/32
+    nginx.ingress.kubernetes.io/proxy-body-size: 8m
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "90"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "90"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "90"
+    nginx.ingress.kubernetes.io/whitelist-source-range: 0.0.0.0/0
+  creationTimestamp: "2019-09-27T09:11:04Z"
+  generation: 7
+  name: nexit-api-ingress
+  namespace: production
+  resourceVersion: "28326876"
+  selfLink: /apis/extensions/v1beta1/namespaces/production/ingresses/nexit-api-ingress
+  uid: bbc11619-e106-11e9-b839-167120397a28
+spec:
+  rules:
+  - host: prod.k8s.mynexit.com
+    http:
+      paths:
+      - backend:
+          serviceName: nexit-api-service
+          servicePort: 80
+status:
+  loadBalancer:
+    ingress:
+    - hostname: a60ba8db6e10211e9a7fa0a5495d1d17-720416808.us-east-1.elb.amazonaws.com
+
+
+nexit@ip-172-31-29-225:~$ kubectl get service -n production
+NAME                          TYPE       CLUSTER-IP       EXTERNAL-IP   PORT(S)        AGE
+exit-finder-api-service       NodePort   10.100.102.57    <none>        80:32374/TCP   610d
+exit-finder-updater-service   NodePort   10.100.213.196   <none>        80:32707/TCP   607d
+nexit-api-service             NodePort   10.100.121.202   <none>        80:31475/TCP   610d
+overpass                      NodePort   10.100.164.60    <none>        80:30651/TCP   605d
+
+
+
+nexit@ip-172-31-29-225:~$ kubectl get service nexit-api-service -n production -o yaml
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"v1","kind":"Service","metadata":{"annotations":{},"labels":{"app":"nexit-api-service"},"name":"nexit-api-service","namespace":"production"},"spec":{"ports":[{"name":"http","port":80,"protocol":"TCP","targetPort":8080}],"selector":{"app":"nexit-api"},"type":"NodePort"}}
+  creationTimestamp: "2019-09-27T09:11:21Z"
+  labels:
+    app: nexit-api-service
+  name: nexit-api-service
+  namespace: production
+  resourceVersion: "222445"
+  selfLink: /api/v1/namespaces/production/services/nexit-api-service
+  uid: c5e5183c-e106-11e9-b839-167120397a28
+spec:
+  clusterIP: 10.100.121.202
+  externalTrafficPolicy: Cluster
+  ports:
+  - name: http
+    nodePort: 31475
+    port: 80
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: nexit-api
+  sessionAffinity: None
+  type: NodePort
+status:
+  loadBalancer: {}
+
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++  
+  Note :
+  https://kubernetes.io/docs/concepts/services-networking/connect-applications-service/
+  https://kubernetes.io/docs/concepts/workloads/controllers/deployment/
+  https://kubernetes.io/docs/concepts/services-networking/service/
+  
+
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  
+root@ip-172-31-7-213:~# cat nginx.yaml 
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  labels:
+    app: nginx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.14.2
+        ports:
+        - containerPort: 80
+--- 
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-service
+spec:
+  selector:
+    app: nginx
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  type: LoadBalancer
+  
